@@ -115,20 +115,31 @@ LIMIT 10;
 -- 5. РОБОТА З ДАТАМИ
 -- ============================================
 
-SELECT
-    id,
-    `Year`,
+ALTER TABLE infectious_cases_normalized
+ADD COLUMN year_start_date DATE,
+ADD COLUMN current_date_value DATE,
+ADD COLUMN year_difference INT;
 
-    STR_TO_DATE(CONCAT(`Year`, '-01-01'), '%Y-%m-%d') AS year_start_date,
+SET SQL_SAFE_UPDATES = 0;
 
-    CURDATE() AS current_date,
-
-    TIMESTAMPDIFF(
+UPDATE infectious_cases_normalized
+SET 
+    year_start_date = STR_TO_DATE(CONCAT(`Year`, '-01-01'), '%Y-%m-%d'),
+    current_date_value = CURDATE(),
+    year_difference = TIMESTAMPDIFF(
         YEAR,
         STR_TO_DATE(CONCAT(`Year`, '-01-01'), '%Y-%m-%d'),
         CURDATE()
-    ) AS year_difference
+    );
 
+SET SQL_SAFE_UPDATES = 1;
+
+SELECT 
+    id,
+    `Year`,
+    year_start_date,
+    current_date_value,
+    year_difference
 FROM infectious_cases_normalized
 LIMIT 10;
 
